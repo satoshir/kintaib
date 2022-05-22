@@ -1,6 +1,7 @@
 <% provide(:title, @user.name) %>
 <div>
   <table class="table table-bordered table-condensed user-table">
+    
     <tr>
       <td>【<%= l(@first_day, format: :middle) %>】勤怠管理表</td>
       <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
@@ -38,9 +39,18 @@
 
     <tbody>
         <% @attendances.each do |day| %>
+      　<% 
+          css_class = 
+          case $days_of_the_week[day.worked_on.wday]
+          when '土' then
+            'text-primary'
+          when '日' then
+            'text-danger'
+          end
+        %>
           <tr>
             <td><%= l(day.worked_on, format: :short) %></td>
-            <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+            <td class="<%= css_class %>"><%= %w{日 月 火 水 木 金 土}[day.worked_on.wday] %></td>
             <td>
               <% if btn_text = attendance_state(day) %>
                 <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), method: :patch, class: "btn btn-primary btn-attendance" %>
