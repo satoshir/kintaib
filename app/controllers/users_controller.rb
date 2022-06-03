@@ -1,9 +1,12 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :correct_user, only: [:edit, :update]
+  before_action :correct_user, only: [:edit, :update　]
   before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info] 
   before_action :set_one_month, only: :show
+  before_action :admin_or_correct, only: :show
+
+  
 
   def index
     @users = User.paginate(page: params[:page])
@@ -58,6 +61,14 @@ class UsersController < ApplicationController
     end
     redirect_to users_url
   end
+  
+  def admin_or_correct
+      @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "アクセス出来ません。"
+      redirect_to(root_url)
+    end
+  end
 
   private
 
@@ -94,4 +105,6 @@ class UsersController < ApplicationController
     def admin_user
       redirect_to root_url unless current_user.admin?
     end
+    
+  
 end
